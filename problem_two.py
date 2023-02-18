@@ -52,3 +52,14 @@ def epsilon_greedy(arms, arm_distributions, num_turns, num_exploration_turns, ep
 
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
         arms.add_arm_reward(arm_to_play, arm_reward)
+
+def ucb(arms, arm_distributions, num_turns):
+    for turn in range(num_turns):
+        ucb_map = {}
+        for arm in arms.arms:
+            reward = arms.get_arm_reward(arm)
+            delta_i = np.sqrt((3 * np.log(len(arms.arms[arm]))) / (2 * len(arms.arms[arm])))
+            ucb_map[arm] = delta_i + reward
+        arm_to_play = max(ucb_map, key=ucb_map.get)
+        arm_reward = np.random.choice(arm_distributions[arm_to_play])
+        arms.add_arm_reward(arm_to_play, arm_reward)
