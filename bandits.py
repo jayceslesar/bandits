@@ -9,6 +9,7 @@ class MultiArmedBandit:
 
     def __init__(self):
         self.arms = {}
+        self.arm_regret = {}
 
     @property
     def num_arms(self) -> int:
@@ -26,6 +27,7 @@ class MultiArmedBandit:
             arm_number: index of the arm
         """
         self.arms[arm_number] = []
+        self.arm_regret[arm_number] = []
 
     def get_random_arm(self) -> int:
         """Draw a random arm.
@@ -62,6 +64,8 @@ class MultiArmedBandit:
             reward: reward we are adding
         """
         self.arms[arm_number].append(reward)
+        # also update regret
+        self.arm_regret[arm_number].append(self.get_arm_regret(arm_number))
 
     def get_arm_rewards(self) -> dict[int, float | int | None]:
         """Wrapper of get_arm_reward for getting all of the arm rewards.
@@ -108,7 +112,8 @@ class MultiArmedBandit:
         if not turns:
             raise ValueError(f"Arm {arm_number} has no plays!")
 
-        optimal_arm, optimal_arm_reward = self.optimal_arm
+        optimal_arm = self.optimal_arm
+        optimal_arm_reward = self.get_arm_reward(optimal_arm)
         regret = sum([optimal_arm_reward - turn for turn in turns])
 
         return regret
