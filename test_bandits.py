@@ -1,10 +1,10 @@
 """Showing Implementation of MAB."""
 
-from bandits import MultiArmedBandit
-
 import numpy as np
-from scipy.stats import beta
 import plotly.graph_objects as go
+from scipy.stats import beta
+
+from bandits import MultiArmedBandit
 
 arms = MultiArmedBandit()
 num_turns = 1_000
@@ -26,7 +26,11 @@ for turn in range(num_turns):
 fig = go.Figure()
 for arm in arms.arms:
     arm_rewards = arms.arms[arm]
-    fig.add_trace(go.Scatter(x=list(range(len(arm_rewards))), y=arm_rewards, name=f"Arm {arm} Rewards"))
+    fig.add_trace(
+        go.Scatter(
+            x=list(range(len(arm_rewards))), y=arm_rewards, name=f"Arm {arm} Rewards"
+        )
+    )
 
 fig.update_layout(title=f"Rewards over Turns for {num_arms} Arms")
 fig.update_xaxes(title="Turn Index")

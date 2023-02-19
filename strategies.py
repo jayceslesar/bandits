@@ -1,8 +1,6 @@
 """Implementation of the 4 strategies for MAB."""
 
 import numpy as np
-from scipy.stats import beta
-import plotly.graph_objects as go
 
 
 def random_strategy(arms, arm_distributions, num_turns):
@@ -38,7 +36,9 @@ def epsilon_first_greedy(arms, arm_distributions, num_turns, num_exploration_tur
         arms.add_arm_reward(arm_to_play, arm_reward)
 
 
-def epsilon_greedy(arms, arm_distributions, num_turns, num_exploration_turns, epsilon=0.8):
+def epsilon_greedy(
+    arms, arm_distributions, num_turns, num_exploration_turns, epsilon=0.8
+):
     for turn in range(num_exploration_turns):
         arm_to_play = arms.get_random_arm()
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
@@ -53,12 +53,15 @@ def epsilon_greedy(arms, arm_distributions, num_turns, num_exploration_turns, ep
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
         arms.add_arm_reward(arm_to_play, arm_reward)
 
+
 def ucb(arms, arm_distributions, num_turns):
     for turn in range(num_turns):
         ucb_map = {}
         for arm in arms.arms:
             reward = arms.get_arm_reward(arm)
-            delta_i = np.sqrt((3 * np.log(len(arms.arms[arm]))) / (2 * len(arms.arms[arm])))
+            delta_i = np.sqrt(
+                (3 * np.log(len(arms.arms[arm]))) / (2 * len(arms.arms[arm]))
+            )
             ucb_map[arm] = delta_i + reward
         arm_to_play = max(ucb_map, key=ucb_map.get)
         arm_reward = np.random.choice(arm_distributions[arm_to_play])

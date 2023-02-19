@@ -95,7 +95,9 @@ class MultiArmedBandit:
 
         return optimal_arm
 
-    def get_arm_regret(self, arm_number: int, max_turns: int | None = None) -> list[float | int]:
+    def get_arm_regret(
+        self, arm_number: int, max_turns: int | None = None
+    ) -> list[float | int]:
         """Calculate the regret of a given arm.
 
         Args:
