@@ -2,15 +2,24 @@
 
 import numpy as np
 
+from bandits import MultiArmedBandit
 
-def random_strategy(arms, arm_distributions, num_turns):
+
+def random_strategy(
+    arms: MultiArmedBandit, arm_distributions: dict[int, list[float]], num_turns: int
+) -> None:
     for turn in range(num_turns):
         arm_to_play = arms.get_random_arm()
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
         arms.add_arm_reward(arm_to_play, arm_reward)
 
 
-def naive_greedy(arms, arm_distributions, num_turns, num_exploration_turns):
+def naive_greedy(
+    arms: MultiArmedBandit,
+    arm_distributions: dict[int, list[float]],
+    num_turns: int,
+    num_exploration_turns: int,
+) -> None:
     for turn in range(num_exploration_turns):
         arm_to_play = arms.get_random_arm()
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
@@ -23,7 +32,12 @@ def naive_greedy(arms, arm_distributions, num_turns, num_exploration_turns):
         arms.add_arm_reward(arm_to_play, arm_reward)
 
 
-def epsilon_first_greedy(arms, arm_distributions, num_turns, num_exploration_turns):
+def epsilon_first_greedy(
+    arms: MultiArmedBandit,
+    arm_distributions: dict[int, list[float]],
+    num_turns: int,
+    num_exploration_turns: int,
+) -> None:
     for arm_to_play in arms.arms:
         for turn in range(num_exploration_turns):
             arm_reward = np.random.choice(arm_distributions[arm_to_play])
@@ -37,8 +51,12 @@ def epsilon_first_greedy(arms, arm_distributions, num_turns, num_exploration_tur
 
 
 def epsilon_greedy(
-    arms, arm_distributions, num_turns, num_exploration_turns, epsilon=0.8
-):
+    arms: MultiArmedBandit,
+    arm_distributions: dict[int, list[float]],
+    num_turns: int,
+    num_exploration_turns: int,
+    epsilon: float = 0.8,
+) -> None:
     for turn in range(num_exploration_turns):
         arm_to_play = arms.get_random_arm()
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
@@ -54,7 +72,9 @@ def epsilon_greedy(
         arms.add_arm_reward(arm_to_play, arm_reward)
 
 
-def ucb(arms, arm_distributions, num_turns):
+def ucb(
+    arms: MultiArmedBandit, arm_distributions: dict[int, list[float]], num_turns: int
+) -> None:
     for turn in range(num_turns):
         ucb_map = {}
         for arm in arms.arms:

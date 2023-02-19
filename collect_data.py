@@ -5,8 +5,13 @@ from plotly.subplots import make_subplots
 from scipy.stats import beta
 
 from bandits import MultiArmedBandit
-from strategies import (epsilon_first_greedy, epsilon_greedy, naive_greedy,
-                        random_strategy, ucb)
+from strategies import (
+    epsilon_first_greedy,
+    epsilon_greedy,
+    naive_greedy,
+    random_strategy,
+    ucb,
+)
 
 strategies = {
     "random": random_strategy,
