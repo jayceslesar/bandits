@@ -95,11 +95,12 @@ class MultiArmedBandit:
 
         return optimal_arm
 
-    def get_arm_regret(self, arm_number: int) -> float | int:
+    def get_arm_regret(self, arm_number: int, max_turns: int | None = None) -> list[float | int]:
         """Calculate the regret of a given arm.
 
         Args:
             arm_number: arm to use
+            max_turns: if provided will only return up to that point
 
         Raises:
             ValueError: If no turns have been played for that arm
@@ -111,8 +112,9 @@ class MultiArmedBandit:
         if not turns:
             raise ValueError(f"Arm {arm_number} has no plays!")
 
+        until = max_turns if max_turns else len(turns)
         optimal_arm = self.optimal_arm
         optimal_arm_reward = self.get_arm_reward(optimal_arm)
-        regret = sum([optimal_arm_reward - turn for turn in turns])
+        regret = [optimal_arm_reward - turn for turn in turns[:until]]
 
         return regret
