@@ -35,9 +35,8 @@ class MultiArmedBandit:
         Returns:
             arm
         """
-        arm = random.choice(range(self.num_arms))
-        # add one here for off by one stuff
-        return arm + 1
+        arm = random.choice(list(self.arms.keys()))
+        return arm
 
     def get_arm_reward(self, arm_number: int) -> float | int:
         """Get the reward (r bar) for a specific arm.
