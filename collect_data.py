@@ -1,6 +1,6 @@
 """Compare Implementations of Strategies for Different Bandits."""
 
-from problem_two import random_strategy, naive_greedy, epsilon_first_greedy, epsilon_greedy, ucb
+from strategies import random_strategy, naive_greedy, epsilon_first_greedy, epsilon_greedy, ucb
 from bandits import MultiArmedBandit
 
 import numpy as np
@@ -22,18 +22,13 @@ NUM_TURNS = 1_000
 
 num_arms = 5
 easy_bandits = {}
-for i in range(1, num_arms + 1):
-    a = 1 / i
-    b = i
-    r = beta.rvs(a, b, size=1000)
-    easy_bandits[i] = r
-
 hard_bandits = {}
 for i in range(1, num_arms + 1):
-    a = 0.5 + (i / 10)
+    easy_a = 1 / i
+    hard_a =  0.5 + (i / 10)
     b = i
-    r = beta.rvs(a, b, size=1000)
-    hard_bandits[i] = r
+    easy_bandits[i] = beta.rvs(easy_a, b, size=1000)
+    hard_bandits[i] = beta.rvs(hard_a, b, size=1000)
 
 for strategy in strategies:
     easy_arms = MultiArmedBandit()
@@ -59,8 +54,8 @@ for strategy in strategies:
     elif strategy == "epsilon greedy":
         num_exploration_turns = 100 * num_arms
         num_turns = NUM_TURNS - num_exploration_turns
-        epsilon_greedy(easy_arms, easy_bandits, num_turns, num_exploration_turns)
-        epsilon_greedy(hard_arms, hard_bandits, num_turns, num_exploration_turns)
+        epsilon_greedy(easy_arms, easy_bandits, num_turns, num_exploration_turns, epsilon=EPSILON)
+        epsilon_greedy(hard_arms, hard_bandits, num_turns, num_exploration_turns, epsilon=EPSILON)
     elif strategy == "upper confidence bound":
         ucb(easy_arms, easy_bandits, num_turns)
         ucb(hard_arms, hard_bandits, num_turns)
