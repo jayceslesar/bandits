@@ -31,19 +31,52 @@ NUM_TURNS = 1_000
 
 
 def plot_strategy(easy_arms, hard_arms, strategy_name):
-    fig = make_subplots(rows=2, cols=1, subplot_titles=("Easy Bandit", "Hard Bandit"))
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        subplot_titles=(
+            "Easy Bandit Rewards",
+            "Easy Bandit Performance Metric",
+            "Hard Bandit Rewards",
+            "Hard Bandit Performance Metric",
+        ),
+        column_widths=[0.75, 0.25],
+    )
     for i, arms in enumerate((easy_arms, hard_arms)):
+        try:
+            regret = arms.regret
+            metric = arms.metric
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(100)),
+                    y=np.cumsum(regret[:100]),
+                    name=f"Cumulative Regret for 100 Turns",
+                    legendgroup=i,
+                ),
+                row=i + 1,
+                col=2,
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(100)),
+                    y=np.diff(metric[:100]),
+                    name=f"Delta Reward for 100 Turns",
+                    legendgroup=i,
+                ),
+                row=i + 1,
+                col=2,
+            )
+            fig.update_xaxes(title_text="Turn", row=i + 1, col=2)
+            fig.update_yaxes(title_text="Metric", row=i + 1, col=2)
+            total_regret = sum(regret)
+            regret_str = f"with regret {total_regret:.2f}"
+        except ValueError:
+            regret_str = ""
         for arm in arms.arms:
             x = list(range(len(arms.arms[arm])))
             y = arms.arms[arm]
-            try:
-                regret = arms.get_arm_regret(arm, max_turns=100)
-                total_regret = sum(regret)
-                regret_str = f" with regret {total_regret:.2f}"
-            except ValueError:
-                regret_str = ""
             fig.add_trace(
-                go.Scatter(x=x, y=y, name=f"Arm {arm} {regret_str}", legendgroup=i),
+                go.Scatter(x=x, y=y, name=f"Arm {arm}", legendgroup=i),
                 row=i + 1,
                 col=1,
             )

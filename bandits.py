@@ -29,7 +29,8 @@ class MultiArmedBandit:
             arm_number: index of the arm
         """
         self.arms[arm_number] = []
-        self.arm_regret[arm_number] = []
+        self.regret = []
+        self.metric = []
 
     def get_random_arm(self) -> int:
         """Draw a random arm.
@@ -66,7 +67,11 @@ class MultiArmedBandit:
         """
         self.arms[arm_number].append(reward)
         # also update regret
-        self.arm_regret[arm_number].append(self.get_arm_regret(arm_number))
+        self.regret.append(self.get_regret(reward))
+        if not self.metric:
+            self.metric.append(reward)
+        else:
+            self.metric.append(self.metric[-1] + reward)
 
     def get_arm_rewards(self) -> dict[int, float | int | None]:
         """Wrapper of get_arm_reward for getting all of the arm rewards.
@@ -97,52 +102,17 @@ class MultiArmedBandit:
 
         return optimal_arm
 
-    def get_arm_regret(
-        self, arm_number: int, max_turns: int | None = None
-    ) -> list[float | int]:
+    def get_regret(self, reward: int) -> float | int:
         """Calculate the regret of a given arm.
 
         Args:
-            arm_number: arm to use
-            max_turns: if provided will only return up to that point
-
-        Raises:
-            ValueError: If no turns have been played for that arm
+            reward: current reward
 
         Returns:
-            the regret
+            the regret for that turn
         """
-        turns = self.arms[arm_number]
-        if not turns:
-            raise ValueError(f"Arm {arm_number} has no plays!")
-
-        until = max_turns if max_turns else len(turns)
         optimal_arm = self.optimal_arm
         optimal_arm_reward = self.get_arm_reward(optimal_arm)
-        regret = [optimal_arm_reward - turn for turn in turns[:until]]
+        regret = optimal_arm_reward - reward
 
         return regret
-
-    def get_my_metric(
-        self, arm_number: int, max_turns: int | None = None
-    ) -> list[float | int]:
-        """Calculate the metric of a given arm.
-
-        Args:
-            arm_number: arm to use
-            max_turns: if provided will only return up to that point
-
-        Raises:
-            ValueError: If no turns have been played for that arm
-
-        Returns:
-            the metric calculation
-        """
-        turns = self.arms[arm_number]
-        if not turns:
-            raise ValueError(f"Arm {arm_number} has no plays!")
-
-        until = max_turns if max_turns else len(turns)
-        metric = list(accumulate(turns[:until]))
-
-        return metric
