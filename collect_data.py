@@ -1,5 +1,6 @@
 """Compare Implementations of Strategies for Different Bandits."""
 
+import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy.stats import beta
@@ -12,6 +13,9 @@ from strategies import (
     random_strategy,
     ucb,
 )
+
+np.random.seed(seed=2023)
+
 
 strategies = {
     "random": random_strategy,
@@ -56,12 +60,31 @@ def plot_strategy(easy_arms, hard_arms, strategy_name):
 num_arms = 5
 easy_bandits = {}
 hard_bandits = {}
+fig = make_subplots(rows=1, cols=2, subplot_titles=("Easy Arms", "Hard Arms"))
 for i in range(1, num_arms + 1):
     easy_a = 1 / i
-    hard_a = 0.5 + (i / 1000)
-    b = i
-    easy_bandits[i] = beta.rvs(easy_a, b, size=1000)
-    hard_bandits[i] = beta.rvs(hard_a, b, size=1000)
+    hard_a = 0.5 + (i / 25)
+    b = 1
+    easy_bandits[i] = beta.rvs(easy_a, b, size=10_000)
+    hard_bandits[i] = beta.rvs(hard_a, b, size=10_000)
+    fig.add_trace(
+        go.Histogram(x=easy_bandits[i], name=f"Arm {i + 1}", legendgroup=i),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Histogram(x=hard_bandits[i], name=f"Arm {i + 1}", legendgroup=i),
+        row=1,
+        col=2,
+    )
+
+fig.update_layout(
+    title_text=f"Reward Distributions for Arms",
+    barmode="overlay",
+    showlegend=False,
+    title_x=0.5,
+)
+fig.show()
 
 for strategy in strategies:
     easy_arms = MultiArmedBandit()

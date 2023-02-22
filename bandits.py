@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import random
+from itertools import accumulate
 
 
 class MultiArmedBandit:
@@ -10,6 +11,7 @@ class MultiArmedBandit:
     def __init__(self):
         self.arms = {}
         self.arm_regret = {}
+        self.my_metric = {}
 
     @property
     def num_arms(self) -> int:
@@ -120,3 +122,27 @@ class MultiArmedBandit:
         regret = [optimal_arm_reward - turn for turn in turns[:until]]
 
         return regret
+
+    def get_my_metric(
+        self, arm_number: int, max_turns: int | None = None
+    ) -> list[float | int]:
+        """Calculate the metric of a given arm.
+
+        Args:
+            arm_number: arm to use
+            max_turns: if provided will only return up to that point
+
+        Raises:
+            ValueError: If no turns have been played for that arm
+
+        Returns:
+            the metric calculation
+        """
+        turns = self.arms[arm_number]
+        if not turns:
+            raise ValueError(f"Arm {arm_number} has no plays!")
+
+        until = max_turns if max_turns else len(turns)
+        metric = list(accumulate(turns[:until]))
+
+        return metric
