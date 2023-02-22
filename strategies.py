@@ -79,10 +79,12 @@ def ucb(
         ucb_map = {}
         for arm in arms.arms:
             reward = arms.get_arm_reward(arm)
-            delta_i = np.sqrt(
-                (3 * np.log(len(arms.arms[arm]))) / (2 * len(arms.arms[arm]))
+            arm_plays = len(arms.arms[arm])
+            total_plays = len(arms.regret)
+            exploration_bonus = 2 * np.sqrt(
+                (np.log(total_plays)) / (arm_plays)
             )
-            ucb_map[arm] = delta_i + reward
+            ucb_map[arm] = exploration_bonus + reward
         arm_to_play = max(ucb_map, key=ucb_map.get)
         arm_reward = np.random.choice(arm_distributions[arm_to_play])
         arms.add_arm_reward(arm_to_play, arm_reward)
